@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Diario Personal</title>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        #calendar {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .preview-image {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+        .audio-item, .image-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .recording {
+            background: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center">Mi Diario Personal</h1>
+    <div id='calendar'></div>
+
+    <!-- Modal para crear/editar entrada -->
+    <div id="entryModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Nueva Entrada</h2>
+            <p id="modalDate"></p>
+            
+            <div class="form-group">
+                <label>Nota escrita:</label>
+                <textarea id="noteText" placeholder="Escribe tu nota aquí..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Nota de voz:</label><br>
+                <button id="recordBtn" onclick="toggleRecording()">🎤 Grabar Voz</button>
+                <div id="audioList"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Ubicación GPS:</label><br>
+                <button onclick="getLocation()">📍 Obtener Ubicación</button>
+                <p id="locationDisplay"></p>
+            </div>
+
+            <div class="form-group">
+                <label>Imágenes:</label><br>
+                <input type="file" id="imageInput" accept="image/*" onchange="previewImage()" multiple>
+                <div id="imagePreview"></div>
+            </div>
+
+            <button onclick="saveEntry()">💾 Guardar</button>
+            <button onclick="closeModal()">❌ Cancelar</button>
+            <button onclick="deleteEntry()" style="background:#dc3545">🗑️ Eliminar</button>
+        </div>
+    </div>
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script>
+        let calendar;
+        let db;
+        let currentDate = null;
+        let mediaRecorder;
+        let audioChunks = [];
+        let currentEntry = {
+            text: '',
+            audio: [],
+            images: [],
+            location: null
+        };
+
+        // Inicializar IndexedDB
+        function initDB() {
+            const request = indexedDB.open('DiaryDB', 1);
+            
+            request.onerror = () => console.error('Error al abrir DB');
+            
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                initCalendar();
+            };
+            
+            request.onupgradeneeded = (event) => {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains('entries')) {
+                    db.createObjectStore('entries', { keyPath: 'date' });
+                }
+            };
+        }
+
+        // Inicializar FullCalendar
+        function initCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'es',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek'
+                },
+                dateClick: function(info) {
+                    openModal(info.dateStr);
+                },
+                events: function(info, successCallback) {
+                    loadCalendarEvents(successCallback);
+                }
+            });
+            calendar.render();
+        }
+
+        // Cargar eventos del calendario desde DB
+        function loadCalendarEvents(callback) {
+            const transaction = db.transaction(['entries'], 'readonly');
+            const objectStore = transaction.objectStore('entries');
+            const request = objectStore.getAllKeys();
+            
+            request.onsuccess = () => {
+                const events = request.result.map(date => ({
+                    title: '📔',
+                    date: date,
+                    display: 'background',
+                    backgroundColor: '#007bff'
+                }));
+                callback(events);
+            };
+        }
+
+        // Abrir modal para fecha específica
+        function openModal(dateStr) {
+            currentDate = dateStr;
+            document.getElementById('modalDate').textContent = new Date(dateStr).toLocaleDateString('es-AR');
+            document.getElementById('entryModal').style.display = 'block';
+            
+            // Cargar entrada existente si hay
+            loadEntry(dateStr);
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('entryModal').style.display = 'none';
+            resetForm();
+        }
+
+        // Cargar entrada existente
+        function loadEntry(dateStr) {
+            const transaction = db.transaction(['entries'], 'readonly');
+            const objectStore = transaction.objectStore('entries');
+            const request = objectStore.get(dateStr);
+            
+            request.onsuccess = () => {
+                if (request.result) {
+                    currentEntry = request.result;
+                    document.getElementById('noteText').value = currentEntry.text || '';
+                    
+                    // Mostrar ubicación
+                    if (currentEntry.location) {
+                        document.getElementById('locationDisplay').innerHTML = 
+                            `📍 Lat: ${currentEntry.location.latitude.toFixed(6)}<br>
+                             Lon: ${currentEntry.location.longitude.toFixed(6)}`;
+                    }
+                    
+                    // Mostrar audios
+                    displayAudios();
+                    
+                    // Mostrar imágenes
+                    displayImages();
+                } else {
+                    currentEntry = { text: '', audio: [], images: [], location: null };
+                }
+            };
+        }
+
+        // Obtener ubicación GPS
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        currentEntry.location = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            timestamp: new Date().toISOString()
+                        };
+                        document.getElementById('locationDisplay').innerHTML = 
+                            `📍 Lat: ${position.coords.latitude.toFixed(6)}<br>
+                             Lon: ${position.coords.longitude.toFixed(6)}`;
+                    },
+                    (error) => {
+                        alert('Error al obtener ubicación: ' + error.message);
+                    }
+                );
+            } else {
+                alert('Tu navegador no soporta geolocalización');
+            }
+        }
+
+        // Grabar audio
+        async function toggleRecording() {
+            const btn = document.getElementById('recordBtn');
+            
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            currentEntry.audio.push({
+                                data: reader.result,
+                                timestamp: new Date().toISOString()
+                            });
+                            displayAudios();
+                        };
+                        reader.readAsDataURL(audioBlob);
+                    };
+                    
+                    mediaRecorder.start();
+                    btn.textContent = '⏹️ Detener';
+                    btn.classList.add('recording');
+                } catch (error) {
+                    alert('Error al acceder al micrófono: ' + error.message);
+                }
+            } else {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                btn.textContent = '🎤 Grabar Voz';
+                btn.classList.remove('recording');
+            }
+        }
+
+        // Mostrar audios guardados
+        function displayAudios() {
+            const container = document.getElementById('audioList');
+            container.innerHTML = '';
+            currentEntry.audio.forEach((audio, index) => {
+                const div = document.createElement('div');
+                div.className = 'audio-item';
+                div.innerHTML = `
+                    <audio controls src="${audio.data}"></audio>
+                    <button onclick="deleteAudio(${index})" style="background:#dc3545;padding:5px 10px">Eliminar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Eliminar audio
+        function deleteAudio(index) {
+            currentEntry.audio.splice(index, 1);
+            displayAudios();
+        }
+
+        // Preview de imagen
+        function previewImage() {
+            const files = document.getElementById('imageInput').files;
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentEntry.images.push({
+                        data: e.target.result,
+                        timestamp: new Date().toISOString()
+                    });
+                    displayImages();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Mostrar imágenes
+        function displayImages() {
+            const container = document.getElementById('imagePreview');
+            container.innerHTML = '';
+            currentEntry.images.forEach((image, index) => {
+                const div = document.createElement('div');
+                div.className = 'image-item';
+                div.innerHTML = `
+                    <img src="${image.data}" class="preview-image">
+                    <button onclick="deleteImage(${index})" style="background:#dc3545">Eliminar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Eliminar imagen
+        function deleteImage(index) {
+            currentEntry.images.splice(index, 1);
+            displayImages();
+        }
+
+        // Guardar entrada
+        function saveEntry() {
+            currentEntry.text = document.getElementById('noteText').value;
+            currentEntry.date = currentDate;
+            
+            const transaction = db.transaction(['entries'], 'readwrite');
+            const objectStore = transaction.objectStore('entries');
+            const request = objectStore.put(currentEntry);
+            
+            request.onsuccess = () => {
+                alert('✅ Entrada guardada');
+                closeModal();
+                calendar.refetchEvents();
+            };
+            
+            request.onerror = () => {
+                alert('❌ Error al guardar');
+            };
+        }
+
+        // Eliminar entrada
+        function deleteEntry() {
+            if (!confirm('¿Seguro que quieres eliminar esta entrada?')) return;
+            
+            const transaction = db.transaction(['entries'], 'readwrite');
+            const objectStore = transaction.objectStore('entries');
+            const request = objectStore.delete(currentDate);
+            
+            request.onsuccess = () => {
+                alert('✅ Entrada eliminada');
+                closeModal();
+                calendar.refetchEvents();
+            };
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('noteText').value = '';
+            document.getElementById('locationDisplay').innerHTML = '';
+            document.getElementById('audioList').innerHTML = '';
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('imageInput').value = '';
+            currentEntry = { text: '', audio: [], images: [], location: null };
+        }
+
+        // Iniciar app
+        window.onload = initDB;
+    </script>
+</body>
+</html>
