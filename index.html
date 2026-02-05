@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -13,68 +14,47 @@
            SISTEMA DE DISEÑO - Variables CSS
            ============================================ */
         :root {
-            /* Paleta principal - Navy Blue para reducir fatiga visual */
-            --color-primary: #1E3A8A;
-            --color-primary-hover: #1E40AF;
-            --color-primary-light: #3B82F6;
-            --color-primary-dark: #1E293B;
-            
-            /* Superficie y fondos */
-            --color-surface: #FFFFFF;
-            --color-background: #F8FAFC;
-            --color-background-alt: #F1F5F9;
-            
-            /* Texto - Contrast ratio > 4.5:1 WCAG AA */
-            --color-text-primary: #0F172A;
-            --color-text-secondary: #475569;
-            --color-text-tertiary: #64748B;
-            --color-text-inverse: #FFFFFF;
-            
-            /* Estados semánticos */
-            --color-success: #059669;
-            --color-error: #DC2626;
-            --color-warning: #D97706;
-            --color-info: #0284C7;
-            
-            /* Bordes y divisores */
-            --color-border: #E2E8F0;
-            --color-border-focus: #3B82F6;
-            
-            /* Sombras para profundidad */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            
-            /* Espaciado consistente - escala 4px */
+            /* 2026 Premium Palette - Neon & Deep Navy */
+            --color-primary: #6366f1;
+            --color-primary-hover: #4f46e5;
+            --color-accent: #10b981;
+            --color-neon-blue: #00f2ff;
+            --color-neon-purple: #bd00ff;
+
+            /* Glassmorphism Surface Tokens */
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: blur(16px) saturate(180%);
+
+            /* Surfaces & Backgrounds */
+            --color-surface: rgba(30, 41, 59, 0.7);
+            --color-background: #020617;
+
+            /* Typography */
+            --color-text-primary: #f8fafc;
+            --color-text-secondary: #94a3b8;
+            --color-text-inverse: #ffffff;
+
+            /* Semantic Colors (Glass adapted) */
+            --color-success: #10b981;
+            --color-error: #ef4444;
+            --color-warning: #f59e0b;
+
+            /* Shadow System - Layered depth */
+            --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.4);
+
+            /* Spacing & Radii */
             --space-xs: 0.25rem;
             --space-sm: 0.5rem;
             --space-md: 1rem;
             --space-lg: 1.5rem;
             --space-xl: 2rem;
-            --space-2xl: 3rem;
-            
-            /* Tipografía responsive */
-            --font-size-xs: 0.75rem;
-            --font-size-sm: 0.875rem;
-            --font-size-base: 1rem;
-            --font-size-lg: 1.125rem;
-            --font-size-xl: 1.25rem;
-            --font-size-2xl: 1.5rem;
-            --font-size-3xl: 1.875rem;
-            
-            /* Radios de borde */
-            --radius-sm: 0.375rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            
-            /* Transiciones suaves */
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-            
-            /* Tamaños táctiles mínimos - WCAG 2.5.5 */
+            --radius-lg: 1.25rem;
+            --radius-xl: 2rem;
+
+            /* Transitions */
+            --transition-premium: cubic-bezier(0.4, 0, 0.2, 1) 0.4s;
             --tap-target-min: 44px;
         }
 
@@ -94,39 +74,73 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
-                         'Helvetica Neue', Arial, sans-serif;
-            font-size: var(--font-size-base);
-            line-height: 1.6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 16px;
             color: var(--color-text-primary);
             background: var(--color-background);
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(339, 49%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 100%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(253, 16%, 7%, 1) 0, transparent 50%);
+            background-attachment: fixed;
+            background-size: 200% 200%;
+            animation: gradient-animation 15s ease infinite;
             overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* ============================================
-           LAYOUT PRINCIPAL
+           LAYOUT PRINCIPAL - Glassmorphism
            ============================================ */
         .app-container {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .app-header {
-            background: var(--color-primary);
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border);
             color: var(--color-text-inverse);
-            padding: var(--space-lg) var(--space-md);
-            box-shadow: var(--shadow-md);
+            padding: var(--space-xl) var(--space-md);
             position: sticky;
             top: 0;
             z-index: 100;
+            margin: var(--space-md);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-premium);
         }
 
         .app-header h1 {
-            font-size: var(--font-size-2xl);
-            font-weight: 700;
-            letter-spacing: -0.025em;
+            font-size: 1.875rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
             text-align: center;
+            background: linear-gradient(to right, var(--color-neon-blue), var(--color-neon-purple));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.3));
         }
 
         .main-content {
@@ -138,14 +152,18 @@
         }
 
         /* ============================================
-           CALENDARIO - Personalización FullCalendar
+           CALENDARIO - Personalización FullCalendar 2026
            ============================================ */
         #calendar {
-            background: var(--color-surface);
-            border-radius: var(--radius-lg);
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
             padding: var(--space-lg);
-            box-shadow: var(--shadow-md);
-            margin-bottom: var(--space-2xl);
+            box-shadow: var(--shadow-premium);
+            margin-bottom: var(--space-xl);
+            color: var(--color-text-primary);
         }
 
         .fc {
@@ -153,10 +171,26 @@
         }
 
         .fc-button {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            border: 1px solid var(--glass-border) !important;
+            color: var(--color-text-primary) !important;
             text-transform: capitalize !important;
             font-weight: 600 !important;
-            border-radius: var(--radius-md) !important;
-            transition: all var(--transition-fast) !important;
+            border-radius: var(--radius-lg) !important;
+            transition: all var(--transition-premium) !important;
+        }
+
+        .fc-button:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-color: var(--color-neon-blue) !important;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2) !important;
+        }
+
+        .fc-button-active {
+            background: var(--color-primary) !important;
+            border-color: var(--color-neon-blue) !important;
         }
 
         .fc-daygrid-day {
@@ -196,10 +230,11 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(4px);
+            background: rgba(2, 6, 23, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: 1000;
-            animation: fadeIn var(--transition-base);
+            animation: fadeIn 0.4s ease;
             overflow-y: auto;
             padding: var(--space-md);
         }
@@ -212,28 +247,37 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-dialog {
-            background: var(--color-surface);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-xl);
             width: 100%;
             max-width: 600px;
-            box-shadow: var(--shadow-xl);
-            animation: slideUp var(--transition-slow);
-            margin-bottom: var(--space-2xl);
+            box-shadow: var(--shadow-premium);
+            animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: var(--space-xl);
         }
 
-        @keyframes slideUp {
+        @keyframes modalSlideUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(40px) scale(0.95);
             }
+
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
 
@@ -341,16 +385,20 @@
         }
 
         .entry-card {
-            background: var(--color-background-alt);
-            border: 1px solid var(--color-border);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             padding: var(--space-lg);
-            transition: all var(--transition-fast);
+            transition: all var(--transition-premium);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .entry-card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--color-primary-light);
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--color-neon-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .entry-card-header {
@@ -381,6 +429,7 @@
             line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -471,75 +520,71 @@
             align-items: center;
             justify-content: center;
             gap: var(--space-sm);
-            padding: var(--space-md) var(--space-lg);
+            padding: var(--space-md) var(--space-xl);
             min-height: var(--tap-target-min);
             border: none;
-            border-radius: var(--radius-md);
-            font-size: var(--font-size-base);
-            font-weight: 600;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: all var(--transition-premium);
             text-decoration: none;
             user-select: none;
             white-space: nowrap;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn:focus-visible {
-            outline: 3px solid var(--color-border-focus);
-            outline-offset: 2px;
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .btn:hover::after {
+            opacity: 1;
         }
 
         /* Variantes de botones */
         .btn-primary {
-            background: var(--color-primary);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-neon-purple));
             color: var(--color-text-inverse);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
 
         .btn-primary:hover:not(:disabled) {
-            background: var(--color-primary-hover);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-primary:active:not(:disabled) {
-            transform: translateY(0);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
         }
 
         .btn-secondary {
-            background: var(--color-background-alt);
+            background: var(--glass-bg);
             color: var(--color-text-primary);
-            border: 2px solid var(--color-border);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .btn-secondary:hover:not(:disabled) {
-            background: var(--color-surface);
-            border-color: var(--color-primary-light);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--color-neon-blue);
         }
 
         .btn-danger {
-            background: var(--color-error);
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
             color: var(--color-text-inverse);
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            background: #B91C1C;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
         }
 
         .btn-ghost {
             background: transparent;
             color: var(--color-text-secondary);
-            padding: var(--space-sm) var(--space-md);
         }
 
         .btn-ghost:hover:not(:disabled) {
-            background: var(--color-background-alt);
+            background: rgba(255, 255, 255, 0.05);
             color: var(--color-text-primary);
         }
 
@@ -574,8 +619,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
         }
 
         /* ============================================
@@ -698,7 +750,7 @@
             color: var(--color-primary);
         }
 
-        .file-input-wrapper input:focus-visible + .file-input-label {
+        .file-input-wrapper input:focus-visible+.file-input-label {
             outline: 3px solid var(--color-border-focus);
             outline-offset: 2px;
         }
@@ -752,7 +804,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* ============================================
@@ -786,6 +840,7 @@
                 opacity: 0;
                 transform: translateX(100%);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -843,15 +898,15 @@
                 --color-primary: #3B82F6;
                 --color-primary-hover: #60A5FA;
                 --color-primary-dark: #2563EB;
-                
+
                 --color-surface: #1E293B;
                 --color-background: #0F172A;
                 --color-background-alt: #334155;
-                
+
                 --color-text-primary: #F8FAFC;
                 --color-text-secondary: #CBD5E1;
                 --color-text-tertiary: #94A3B8;
-                
+
                 --color-border: #334155;
                 --color-border-focus: #60A5FA;
             }
@@ -869,6 +924,7 @@
            ACCESIBILIDAD - Motion
            ============================================ */
         @media (prefers-reduced-motion: reduce) {
+
             *,
             *::before,
             *::after {
@@ -898,6 +954,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="app-container">
         <!-- HEADER -->
@@ -911,14 +968,8 @@
         </main>
 
         <!-- MODAL -->
-        <div 
-            id="entryModal" 
-            class="modal-overlay" 
-            role="dialog" 
-            aria-modal="true" 
-            aria-labelledby="modalTitle"
-            aria-hidden="true"
-        >
+        <div id="entryModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <!-- Modal Header -->
                 <div class="modal-header">
@@ -926,13 +977,10 @@
                         <h2 id="modalTitle" class="modal-title">Nueva Entrada</h2>
                         <p id="modalDate" class="modal-subtitle"></p>
                     </div>
-                    <button 
-                        class="modal-close" 
-                        onclick="closeModal()"
-                        aria-label="Cerrar modal"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
+                    <button class="modal-close" onclick="closeModal()" aria-label="Cerrar modal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -952,26 +1000,21 @@
                         <!-- Nota de texto -->
                         <div class="form-group">
                             <label for="noteText" class="form-label">Nota escrita</label>
-                            <textarea 
-                                id="noteText" 
-                                class="form-textarea"
+                            <textarea id="noteText" class="form-textarea"
                                 placeholder="¿Qué sucedió hoy? Escribe tus pensamientos aquí..."
-                                aria-describedby="noteTextHelp"
-                            ></textarea>
+                                aria-describedby="noteTextHelp"></textarea>
                         </div>
 
                         <!-- Notas de voz -->
                         <div class="form-group">
                             <label class="form-label">Notas de voz</label>
-                            <button 
-                                id="recordBtn" 
-                                class="btn btn-record"
-                                onclick="toggleRecording()"
-                                aria-label="Grabar nota de voz"
-                            >
+                            <button id="recordBtn" class="btn btn-record" onclick="toggleRecording()"
+                                aria-label="Grabar nota de voz">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                                    <path
+                                        d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                                    <path
+                                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
                                 </svg>
                                 <span id="recordBtnText">Grabar voz</span>
                             </button>
@@ -981,14 +1024,12 @@
                         <!-- Ubicación GPS -->
                         <div class="form-group">
                             <label class="form-label">Ubicación GPS</label>
-                            <button 
-                                class="btn btn-secondary"
-                                onclick="getLocation()"
-                                aria-label="Obtener ubicación GPS actual"
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-                                    <circle cx="12" cy="10" r="3"/>
+                            <button class="btn btn-secondary" onclick="getLocation()"
+                                aria-label="Obtener ubicación GPS actual">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                    <circle cx="12" cy="10" r="3" />
                                 </svg>
                                 Obtener ubicación
                             </button>
@@ -999,19 +1040,14 @@
                         <div class="form-group">
                             <label class="form-label">Imágenes</label>
                             <div class="file-input-wrapper">
-                                <input 
-                                    type="file" 
-                                    id="imageInput" 
-                                    accept="image/*" 
-                                    multiple
-                                    onchange="previewImage()"
-                                    aria-label="Seleccionar imágenes"
-                                >
+                                <input type="file" id="imageInput" accept="image/*" multiple onchange="previewImage()"
+                                    aria-label="Seleccionar imágenes">
                                 <label for="imageInput" class="file-input-label">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                                        <path d="M21 15l-5-5L5 21"/>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                        <circle cx="8.5" cy="8.5" r="1.5" />
+                                        <path d="M21 15l-5-5L5 21" />
                                     </svg>
                                     Agregar fotos
                                 </label>
@@ -1024,21 +1060,15 @@
                 <!-- Modal Footer -->
                 <div class="modal-footer">
                     <div class="button-group">
-                        <button 
-                            class="btn btn-primary"
-                            onclick="saveEntry()"
-                            style="flex: 1;"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-                                <path d="M17 21v-8H7v8M7 3v5h8"/>
+                        <button class="btn btn-primary" onclick="saveEntry()" style="flex: 1;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                                <path d="M17 21v-8H7v8M7 3v5h8" />
                             </svg>
                             Guardar
                         </button>
-                        <button 
-                            class="btn btn-secondary"
-                            onclick="closeModal()"
-                        >
+                        <button class="btn btn-secondary" onclick="closeModal()">
                             Cancelar
                         </button>
                     </div>
@@ -1080,27 +1110,27 @@
         // ============================================
         function initDB() {
             const request = indexedDB.open('DiaryDB', 2);
-            
+
             request.onerror = () => {
                 showToast('Error al inicializar la base de datos', 'error');
             };
-            
+
             request.onsuccess = (event) => {
                 db = event.target.result;
                 initCalendar();
             };
-            
+
             request.onupgradeneeded = (event) => {
                 db = event.target.result;
-                
+
                 if (db.objectStoreNames.contains('entries')) {
                     db.deleteObjectStore('entries');
                 }
-                
-                const objectStore = db.createObjectStore('entries', { 
-                    keyPath: 'timestamp' 
+
+                const objectStore = db.createObjectStore('entries', {
+                    keyPath: 'timestamp'
                 });
-                
+
                 objectStore.createIndex('date', 'date', { unique: false });
             };
         }
@@ -1125,10 +1155,10 @@
                     week: 'Semana'
                 },
                 height: 'auto',
-                dateClick: function(info) {
+                dateClick: function (info) {
                     openModal(info.dateStr);
                 },
-                dayCellDidMount: function(info) {
+                dayCellDidMount: function (info) {
                     checkDateHasEntries(info.date, info.el);
                 }
             });
@@ -1141,7 +1171,7 @@
             const objectStore = transaction.objectStore('entries');
             const index = objectStore.index('date');
             const request = index.count(dateStr);
-            
+
             request.onsuccess = () => {
                 if (request.result > 0) {
                     element.classList.add('has-entry');
@@ -1156,17 +1186,17 @@
             currentDate = dateStr;
             const modal = document.getElementById('entryModal');
             const dateObj = new Date(dateStr + 'T12:00:00');
-            
+
             document.getElementById('modalDate').textContent = dateObj.toLocaleDateString('es-AR', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             });
-            
+
             modal.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
-            
+
             loadEntriesForDate(dateStr);
             resetForm();
         }
@@ -1175,11 +1205,11 @@
             const modal = document.getElementById('entryModal');
             modal.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
-            
+
             if (mediaRecorder && mediaRecorder.state === 'recording') {
                 stopRecording();
             }
-            
+
             resetForm();
         }
 
@@ -1208,7 +1238,7 @@
             const objectStore = transaction.objectStore('entries');
             const index = objectStore.index('date');
             const request = index.getAll(dateStr);
-            
+
             request.onsuccess = () => {
                 const entries = request.result;
                 entries.sort((a, b) => b.timestamp - a.timestamp);
@@ -1219,28 +1249,28 @@
         function displayEntries(entries) {
             const section = document.getElementById('entriesSection');
             const container = document.getElementById('entriesList');
-            
+
             if (entries.length === 0) {
                 section.classList.add('hidden');
                 return;
             }
-            
+
             section.classList.remove('hidden');
             container.innerHTML = '';
-            
+
             entries.forEach(entry => {
                 const time = new Date(entry.timestamp).toLocaleTimeString('es-AR', {
                     hour: '2-digit',
                     minute: '2-digit'
                 });
-                
+
                 const card = document.createElement('article');
                 card.className = 'entry-card';
-                
+
                 const hasAudio = entry.audio && entry.audio.length > 0;
                 const hasImages = entry.images && entry.images.length > 0;
                 const hasLocation = entry.location !== null;
-                
+
                 card.innerHTML = `
                     <div class="entry-card-header">
                         <div class="entry-time">
@@ -1279,7 +1309,7 @@
                         ${hasLocation ? `<span class="entry-meta-item">📍 GPS</span>` : ''}
                     </div>
                 `;
-                
+
                 container.appendChild(card);
             });
         }
@@ -1288,23 +1318,23 @@
             const transaction = db.transaction(['entries'], 'readonly');
             const objectStore = transaction.objectStore('entries');
             const request = objectStore.get(timestamp);
-            
+
             request.onsuccess = () => {
                 if (request.result) {
                     currentEntry = request.result;
-                    
+
                     document.getElementById('noteText').value = currentEntry.text || '';
-                    
+
                     if (currentEntry.location) {
                         displayLocation(currentEntry.location);
                     }
-                    
+
                     displayAudios();
                     displayImages();
-                    
+
                     document.querySelector('.form-section-title').textContent = 'Editar entrada';
-                    
-                    document.querySelector('.entries-section').scrollIntoView({ 
+
+                    document.querySelector('.entries-section').scrollIntoView({
                         behavior: 'smooth',
                         block: 'nearest'
                     });
@@ -1316,17 +1346,17 @@
             if (!confirm('¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.')) {
                 return;
             }
-            
+
             const transaction = db.transaction(['entries'], 'readwrite');
             const objectStore = transaction.objectStore('entries');
             const request = objectStore.delete(timestamp);
-            
+
             request.onsuccess = () => {
                 showToast('Entrada eliminada correctamente', 'success');
                 loadEntriesForDate(currentDate);
                 calendar.refetchEvents();
             };
-            
+
             request.onerror = () => {
                 showToast('Error al eliminar la entrada', 'error');
             };
@@ -1337,14 +1367,14 @@
         // ============================================
         function saveEntry() {
             const text = document.getElementById('noteText').value.trim();
-            
+
             if (!text && currentEntry.audio.length === 0 && currentEntry.images.length === 0) {
                 showToast('Agrega al menos una nota, audio o imagen', 'error');
                 return;
             }
-            
+
             const timestamp = currentEntry.timestamp || Date.now();
-            
+
             const entry = {
                 timestamp: timestamp,
                 date: currentDate,
@@ -1354,17 +1384,17 @@
                 images: currentEntry.images,
                 location: currentEntry.location
             };
-            
+
             const transaction = db.transaction(['entries'], 'readwrite');
             const objectStore = transaction.objectStore('entries');
             const request = objectStore.put(entry);
-            
+
             request.onsuccess = () => {
                 showToast('Entrada guardada correctamente', 'success');
                 closeModal();
                 calendar.refetchEvents();
             };
-            
+
             request.onerror = () => {
                 showToast('Error al guardar la entrada', 'error');
             };
@@ -1376,17 +1406,17 @@
         async function toggleRecording() {
             const btn = document.getElementById('recordBtn');
             const btnText = document.getElementById('recordBtnText');
-            
+
             if (!mediaRecorder || mediaRecorder.state === 'inactive') {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     mediaRecorder = new MediaRecorder(stream);
                     audioChunks = [];
-                    
+
                     mediaRecorder.ondataavailable = (event) => {
                         audioChunks.push(event.data);
                     };
-                    
+
                     mediaRecorder.onstop = () => {
                         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                         const reader = new FileReader();
@@ -1399,7 +1429,7 @@
                         };
                         reader.readAsDataURL(audioBlob);
                     };
-                    
+
                     mediaRecorder.start();
                     btn.classList.add('recording');
                     btnText.textContent = 'Detener grabación';
@@ -1415,7 +1445,7 @@
             if (mediaRecorder && mediaRecorder.state === 'recording') {
                 mediaRecorder.stop();
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
-                
+
                 const btn = document.getElementById('recordBtn');
                 const btnText = document.getElementById('recordBtnText');
                 btn.classList.remove('recording');
@@ -1426,9 +1456,9 @@
         function displayAudios() {
             const container = document.getElementById('audioList');
             container.innerHTML = '';
-            
+
             if (currentEntry.audio.length === 0) return;
-            
+
             currentEntry.audio.forEach((audio, index) => {
                 const div = document.createElement('div');
                 div.className = 'media-item';
@@ -1461,9 +1491,9 @@
                 showToast('Tu navegador no soporta geolocalización', 'error');
                 return;
             }
-            
+
             showToast('Obteniendo ubicación...', 'info');
-            
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     currentEntry.location = {
@@ -1517,13 +1547,13 @@
         // ============================================
         function previewImage() {
             const files = document.getElementById('imageInput').files;
-            
+
             Array.from(files).forEach(file => {
                 if (file.size > 5 * 1024 * 1024) {
                     showToast('La imagen es demasiado grande (máx 5MB)', 'error');
                     return;
                 }
-                
+
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     currentEntry.images.push({
@@ -1535,16 +1565,16 @@
                 };
                 reader.readAsDataURL(file);
             });
-            
+
             document.getElementById('imageInput').value = '';
         }
 
         function displayImages() {
             const container = document.getElementById('imagePreview');
             container.innerHTML = '';
-            
+
             if (currentEntry.images.length === 0) return;
-            
+
             currentEntry.images.forEach((image, index) => {
                 const div = document.createElement('div');
                 div.className = 'image-item';
@@ -1577,17 +1607,17 @@
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
             toast.setAttribute('role', 'alert');
-            
+
             const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
-            
+
             toast.innerHTML = `
                 <div class="toast-content">
                     <div class="toast-message">${icon} ${message}</div>
                 </div>
             `;
-            
+
             container.appendChild(toast);
-            
+
             setTimeout(() => {
                 toast.style.animation = 'slideOutRight 300ms ease-in-out';
                 setTimeout(() => toast.remove(), 300);
@@ -1603,20 +1633,21 @@
             document.getElementById('audioList').innerHTML = '';
             document.getElementById('imagePreview').innerHTML = '';
             document.getElementById('imageInput').value = '';
-            
-            currentEntry = { 
-                text: '', 
-                audio: [], 
-                images: [], 
-                location: null 
+
+            currentEntry = {
+                text: '',
+                audio: [],
+                images: [],
+                location: null
             };
-            
+
             document.querySelector('.form-section-title').textContent = 'Nueva entrada';
-            
+
             if (mediaRecorder && mediaRecorder.state === 'recording') {
                 stopRecording();
             }
         }
     </script>
 </body>
+
 </html>
