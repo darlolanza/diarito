@@ -2,121 +2,1060 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Diario personal con notas de voz, fotos y GPS">
+    <meta name="theme-color" content="#1E3A8A">
     <title>Mi Diario Personal</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* ============================================
+           SISTEMA DE DISEÑO - Variables CSS
+           ============================================ */
+        :root {
+            /* Paleta principal - Navy Blue para reducir fatiga visual */
+            --color-primary: #1E3A8A;
+            --color-primary-hover: #1E40AF;
+            --color-primary-light: #3B82F6;
+            --color-primary-dark: #1E293B;
+            
+            /* Superficie y fondos */
+            --color-surface: #FFFFFF;
+            --color-background: #F8FAFC;
+            --color-background-alt: #F1F5F9;
+            
+            /* Texto - Contrast ratio > 4.5:1 WCAG AA */
+            --color-text-primary: #0F172A;
+            --color-text-secondary: #475569;
+            --color-text-tertiary: #64748B;
+            --color-text-inverse: #FFFFFF;
+            
+            /* Estados semánticos */
+            --color-success: #059669;
+            --color-error: #DC2626;
+            --color-warning: #D97706;
+            --color-info: #0284C7;
+            
+            /* Bordes y divisores */
+            --color-border: #E2E8F0;
+            --color-border-focus: #3B82F6;
+            
+            /* Sombras para profundidad */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* Espaciado consistente - escala 4px */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Tipografía responsive */
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            
+            /* Radios de borde */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            /* Transiciones suaves */
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Tamaños táctiles mínimos - WCAG 2.5.5 */
+            --tap-target-min: 44px;
+        }
+
+        /* ============================================
+           RESET Y BASE
+           ============================================ */
+        * {
             margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
+            padding: 0;
+            box-sizing: border-box;
         }
-        #calendar {
-            max-width: 900px;
+
+        html {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+                         'Helvetica Neue', Arial, sans-serif;
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            color: var(--color-text-primary);
+            background: var(--color-background);
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+           LAYOUT PRINCIPAL
+           ============================================ */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            background: var(--color-primary);
+            color: var(--color-text-inverse);
+            padding: var(--space-lg) var(--space-md);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: var(--space-lg) var(--space-md);
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
+            width: 100%;
         }
-        .modal {
+
+        /* ============================================
+           CALENDARIO - Personalización FullCalendar
+           ============================================ */
+        #calendar {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .fc {
+            /* Mejoras de accesibilidad para FullCalendar */
+        }
+
+        .fc-button {
+            text-transform: capitalize !important;
+            font-weight: 600 !important;
+            border-radius: var(--radius-md) !important;
+            transition: all var(--transition-fast) !important;
+        }
+
+        .fc-daygrid-day {
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+        }
+
+        .fc-daygrid-day:hover {
+            background-color: var(--color-background-alt) !important;
+        }
+
+        .fc-daygrid-day:focus-visible {
+            outline: 3px solid var(--color-border-focus);
+            outline-offset: -3px;
+        }
+
+        .fc-daygrid-day.has-entry {
+            position: relative;
+        }
+
+        .fc-daygrid-day.has-entry::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--color-primary);
+            border-radius: 50%;
+        }
+
+        /* ============================================
+           MODAL OVERLAY - Accesible y animado
+           ============================================ */
+        .modal-overlay {
             display: none;
             position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(4px);
             z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
+            animation: fadeIn var(--transition-base);
+            overflow-y: auto;
+            padding: var(--space-md);
         }
-        .modal-content {
-            background: white;
-            margin: 5% auto;
-            padding: 20px;
-            width: 90%;
+
+        .modal-overlay[aria-hidden="false"] {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: var(--space-xl);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-dialog {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            width: 100%;
             max-width: 600px;
-            border-radius: 10px;
-            max-height: 80vh;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp var(--transition-slow);
+            margin-bottom: var(--space-2xl);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================
+           MODAL HEADER
+           ============================================ */
+        .modal-header {
+            padding: var(--space-xl);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-md);
+        }
+
+        .modal-title-group {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .modal-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .modal-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .modal-close {
+            flex-shrink: 0;
+            background: transparent;
+            border: none;
+            color: var(--color-text-tertiary);
+            cursor: pointer;
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            min-width: var(--tap-target-min);
+            min-height: var(--tap-target-min);
+        }
+
+        .modal-close:hover {
+            background: var(--color-background-alt);
+            color: var(--color-text-primary);
+        }
+
+        .modal-close:focus-visible {
+            outline: 3px solid var(--color-border-focus);
+            outline-offset: 2px;
+        }
+
+        /* ============================================
+           MODAL BODY
+           ============================================ */
+        .modal-body {
+            padding: var(--space-xl);
+            max-height: 60vh;
             overflow-y: auto;
         }
+
+        /* Scrollbar personalizado */
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: var(--color-background);
+            border-radius: var(--radius-sm);
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: var(--radius-sm);
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: var(--color-text-tertiary);
+        }
+
+        /* ============================================
+           LISTA DE ENTRADAS EXISTENTES
+           ============================================ */
+        .entries-section {
+            margin-bottom: var(--space-2xl);
+        }
+
+        .entries-section-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-md);
+        }
+
+        .entries-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .entry-card {
+            background: var(--color-background-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            transition: all var(--transition-fast);
+        }
+
+        .entry-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-primary-light);
+        }
+
+        .entry-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-md);
+            gap: var(--space-md);
+        }
+
+        .entry-time {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .entry-text-preview {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .entry-meta {
+            display: flex;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .entry-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        /* ============================================
+           FORMULARIO - Nueva entrada
+           ============================================ */
+        .form-section {
+            border-top: 2px solid var(--color-border);
+            padding-top: var(--space-xl);
+        }
+
+        .form-section-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-lg);
+        }
+
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: var(--space-xl);
         }
-        textarea {
+
+        .form-label {
+            display: block;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .form-label-required::after {
+            content: ' *';
+            color: var(--color-error);
+        }
+
+        .form-input,
+        .form-textarea {
             width: 100%;
-            min-height: 100px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: var(--space-md);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+            background: var(--color-surface);
+            transition: all var(--transition-fast);
+            font-family: inherit;
         }
-        button {
-            background: #007bff;
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-border-focus);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--color-text-tertiary);
+        }
+
+        /* ============================================
+           BOTONES - Sistema unificado
+           ============================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            min-height: var(--tap-target-min);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-decoration: none;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .btn:focus-visible {
+            outline: 3px solid var(--color-border-focus);
+            outline-offset: 2px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Variantes de botones */
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-text-inverse);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--color-primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--color-background-alt);
+            color: var(--color-text-primary);
+            border: 2px solid var(--color-border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--color-surface);
+            border-color: var(--color-primary-light);
+        }
+
+        .btn-danger {
+            background: var(--color-error);
+            color: var(--color-text-inverse);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #B91C1C;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--color-text-secondary);
+            padding: var(--space-sm) var(--space-md);
+        }
+
+        .btn-ghost:hover:not(:disabled) {
+            background: var(--color-background-alt);
+            color: var(--color-text-primary);
+        }
+
+        /* Tamaños de botones */
+        .btn-sm {
+            padding: var(--space-sm) var(--space-md);
+            font-size: var(--font-size-sm);
+            min-height: 36px;
+        }
+
+        .btn-icon {
+            width: var(--tap-target-min);
+            height: var(--tap-target-min);
+            padding: 0;
+        }
+
+        /* Botón de grabación con estado activo */
+        .btn-record {
+            background: var(--color-surface);
+            color: var(--color-error);
+            border: 2px solid var(--color-error);
+        }
+
+        .btn-record:hover:not(:disabled) {
+            background: #FEE2E2;
+        }
+
+        .btn-record.recording {
+            background: var(--color-error);
+            color: var(--color-text-inverse);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* ============================================
+           GRUPOS DE BOTONES
+           ============================================ */
+        .button-group {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .modal-footer {
+            padding: var(--space-xl);
+            border-top: 1px solid var(--color-border);
+            background: var(--color-background-alt);
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+        }
+
+        /* ============================================
+           MEDIOS - Audio, Imágenes
+           ============================================ */
+        .media-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .media-item {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .media-item audio {
+            flex: 1;
+            height: 40px;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .image-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 2px solid var(--color-border);
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-item-remove {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            background: rgba(220, 38, 38, 0.9);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            margin-right: 10px;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
         }
-        button:hover {
-            background: #0056b3;
+
+        .image-item:hover .image-item-remove {
+            opacity: 1;
         }
-        .preview-image {
-            max-width: 100%;
-            margin-top: 10px;
+
+        /* ============================================
+           INPUT FILE PERSONALIZADO
+           ============================================ */
+        .file-input-wrapper {
+            position: relative;
         }
-        .audio-item, .image-item {
-            margin: 10px 0;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 5px;
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
-        .recording {
-            background: #ff4444;
+
+        .file-input-label {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            min-height: var(--tap-target-min);
+            background: var(--color-surface);
+            border: 2px dashed var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .file-input-label:hover {
+            border-color: var(--color-primary-light);
+            background: var(--color-background-alt);
+            color: var(--color-primary);
+        }
+
+        .file-input-wrapper input:focus-visible + .file-input-label {
+            outline: 3px solid var(--color-border-focus);
+            outline-offset: 2px;
+        }
+
+        /* ============================================
+           LOCATION DISPLAY
+           ============================================ */
+        .location-display {
+            margin-top: var(--space-md);
+            padding: var(--space-md);
+            background: var(--color-background-alt);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--color-success);
+        }
+
+        .location-coords {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ============================================
+           ESTADOS VACÍOS
+           ============================================ */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-2xl);
+            color: var(--color-text-tertiary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .empty-state-text {
+            font-size: var(--font-size-sm);
+        }
+
+        /* ============================================
+           LOADING SPINNER
+           ============================================ */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           TOAST NOTIFICATIONS
+           ============================================ */
+        .toast-container {
+            position: fixed;
+            bottom: var(--space-xl);
+            right: var(--space-xl);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            max-width: 400px;
+        }
+
+        .toast {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            animation: slideInRight var(--transition-slow);
+            border-left: 4px solid var(--color-primary);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast-success {
+            border-left-color: var(--color-success);
+        }
+
+        .toast-error {
+            border-left-color: var(--color-error);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-message {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        /* ============================================
+           RESPONSIVE - Tablet y Desktop
+           ============================================ */
+        @media (min-width: 768px) {
+            .main-content {
+                padding: var(--space-2xl) var(--space-xl);
+            }
+
+            .modal-dialog {
+                max-width: 700px;
+            }
+
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .app-header h1 {
+                font-size: var(--font-size-3xl);
+            }
+
+            .button-group {
+                flex-wrap: nowrap;
+            }
+        }
+
+        /* ============================================
+           MODO OSCURO (Respeta preferencias del sistema)
+           ============================================ */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-primary: #3B82F6;
+                --color-primary-hover: #60A5FA;
+                --color-primary-dark: #2563EB;
+                
+                --color-surface: #1E293B;
+                --color-background: #0F172A;
+                --color-background-alt: #334155;
+                
+                --color-text-primary: #F8FAFC;
+                --color-text-secondary: #CBD5E1;
+                --color-text-tertiary: #94A3B8;
+                
+                --color-border: #334155;
+                --color-border-focus: #60A5FA;
+            }
+
+            .entry-card {
+                background: var(--color-surface);
+            }
+
+            .modal-footer {
+                background: var(--color-background);
+            }
+        }
+
+        /* ============================================
+           ACCESIBILIDAD - Motion
+           ============================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ============================================
+           UTILIDADES
+           ============================================ */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <h1 style="text-align:center">Mi Diario Personal</h1>
-    <div id='calendar'></div>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header" role="banner">
+            <h1>📔 Mi Diario Personal</h1>
+        </header>
 
-    <!-- Modal para crear/editar entrada -->
-    <div id="entryModal" class="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle">Nueva Entrada</h2>
-            <p id="modalDate"></p>
-            
-            <div class="form-group">
-                <label>Nota escrita:</label>
-                <textarea id="noteText" placeholder="Escribe tu nota aquí..."></textarea>
+        <!-- MAIN CONTENT -->
+        <main class="main-content" role="main">
+            <div id='calendar' role="application" aria-label="Calendario de entradas del diario"></div>
+        </main>
+
+        <!-- MODAL -->
+        <div 
+            id="entryModal" 
+            class="modal-overlay" 
+            role="dialog" 
+            aria-modal="true" 
+            aria-labelledby="modalTitle"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <div class="modal-title-group">
+                        <h2 id="modalTitle" class="modal-title">Nueva Entrada</h2>
+                        <p id="modalDate" class="modal-subtitle"></p>
+                    </div>
+                    <button 
+                        class="modal-close" 
+                        onclick="closeModal()"
+                        aria-label="Cerrar modal"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <!-- Entradas existentes -->
+                    <div id="entriesSection" class="entries-section hidden">
+                        <h3 class="entries-section-title">Entradas del día</h3>
+                        <div id="entriesList" class="entries-list"></div>
+                    </div>
+
+                    <!-- Formulario nueva entrada -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Nueva entrada</h3>
+
+                        <!-- Nota de texto -->
+                        <div class="form-group">
+                            <label for="noteText" class="form-label">Nota escrita</label>
+                            <textarea 
+                                id="noteText" 
+                                class="form-textarea"
+                                placeholder="¿Qué sucedió hoy? Escribe tus pensamientos aquí..."
+                                aria-describedby="noteTextHelp"
+                            ></textarea>
+                        </div>
+
+                        <!-- Notas de voz -->
+                        <div class="form-group">
+                            <label class="form-label">Notas de voz</label>
+                            <button 
+                                id="recordBtn" 
+                                class="btn btn-record"
+                                onclick="toggleRecording()"
+                                aria-label="Grabar nota de voz"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                                </svg>
+                                <span id="recordBtnText">Grabar voz</span>
+                            </button>
+                            <div id="audioList" class="media-list"></div>
+                        </div>
+
+                        <!-- Ubicación GPS -->
+                        <div class="form-group">
+                            <label class="form-label">Ubicación GPS</label>
+                            <button 
+                                class="btn btn-secondary"
+                                onclick="getLocation()"
+                                aria-label="Obtener ubicación GPS actual"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                Obtener ubicación
+                            </button>
+                            <div id="locationDisplay"></div>
+                        </div>
+
+                        <!-- Imágenes -->
+                        <div class="form-group">
+                            <label class="form-label">Imágenes</label>
+                            <div class="file-input-wrapper">
+                                <input 
+                                    type="file" 
+                                    id="imageInput" 
+                                    accept="image/*" 
+                                    multiple
+                                    onchange="previewImage()"
+                                    aria-label="Seleccionar imágenes"
+                                >
+                                <label for="imageInput" class="file-input-label">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <path d="M21 15l-5-5L5 21"/>
+                                    </svg>
+                                    Agregar fotos
+                                </label>
+                            </div>
+                            <div id="imagePreview" class="image-grid"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <div class="button-group">
+                        <button 
+                            class="btn btn-primary"
+                            onclick="saveEntry()"
+                            style="flex: 1;"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                                <path d="M17 21v-8H7v8M7 3v5h8"/>
+                            </svg>
+                            Guardar
+                        </button>
+                        <button 
+                            class="btn btn-secondary"
+                            onclick="closeModal()"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label>Nota de voz:</label><br>
-                <button id="recordBtn" onclick="toggleRecording()">🎤 Grabar Voz</button>
-                <div id="audioList"></div>
-            </div>
-
-            <div class="form-group">
-                <label>Ubicación GPS:</label><br>
-                <button onclick="getLocation()">📍 Obtener Ubicación</button>
-                <p id="locationDisplay"></p>
-            </div>
-
-            <div class="form-group">
-                <label>Imágenes:</label><br>
-                <input type="file" id="imageInput" accept="image/*" onchange="previewImage()" multiple>
-                <div id="imagePreview"></div>
-            </div>
-
-            <button onclick="saveEntry()">💾 Guardar</button>
-            <button onclick="closeModal()">❌ Cancelar</button>
-            <button onclick="deleteEntry()" style="background:#dc3545">🗑️ Eliminar</button>
         </div>
+
+        <!-- Toast Container -->
+        <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
     </div>
 
+    <!-- Scripts -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
     <script>
+        // ============================================
+        // VARIABLES GLOBALES
+        // ============================================
         let calendar;
         let db;
         let currentDate = null;
@@ -129,11 +1068,22 @@
             location: null
         };
 
-        // Inicializar IndexedDB
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        window.addEventListener('DOMContentLoaded', () => {
+            initDB();
+        });
+
+        // ============================================
+        // INDEXEDDB
+        // ============================================
         function initDB() {
-            const request = indexedDB.open('DiaryDB', 1);
+            const request = indexedDB.open('DiaryDB', 2);
             
-            request.onerror = () => console.error('Error al abrir DB');
+            request.onerror = () => {
+                showToast('Error al inicializar la base de datos', 'error');
+            };
             
             request.onsuccess = (event) => {
                 db = event.target.result;
@@ -142,121 +1092,290 @@
             
             request.onupgradeneeded = (event) => {
                 db = event.target.result;
-                if (!db.objectStoreNames.contains('entries')) {
-                    db.createObjectStore('entries', { keyPath: 'date' });
+                
+                if (db.objectStoreNames.contains('entries')) {
+                    db.deleteObjectStore('entries');
                 }
+                
+                const objectStore = db.createObjectStore('entries', { 
+                    keyPath: 'timestamp' 
+                });
+                
+                objectStore.createIndex('date', 'date', { unique: false });
             };
         }
 
-        // Inicializar FullCalendar
+        // ============================================
+        // CALENDARIO
+        // ============================================
         function initCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
+                initialView: window.innerWidth < 768 ? 'dayGridWeek' : 'dayGridMonth',
                 locale: 'es',
+                firstDay: 1,
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,dayGridWeek'
+                    right: window.innerWidth < 768 ? 'dayGridWeek' : 'dayGridMonth,dayGridWeek'
                 },
+                buttonText: {
+                    today: 'Hoy',
+                    month: 'Mes',
+                    week: 'Semana'
+                },
+                height: 'auto',
                 dateClick: function(info) {
                     openModal(info.dateStr);
                 },
-                events: function(info, successCallback) {
-                    loadCalendarEvents(successCallback);
+                dayCellDidMount: function(info) {
+                    checkDateHasEntries(info.date, info.el);
                 }
             });
             calendar.render();
         }
 
-        // Cargar eventos del calendario desde DB
-        function loadCalendarEvents(callback) {
+        function checkDateHasEntries(date, element) {
+            const dateStr = date.toISOString().split('T')[0];
             const transaction = db.transaction(['entries'], 'readonly');
             const objectStore = transaction.objectStore('entries');
-            const request = objectStore.getAllKeys();
+            const index = objectStore.index('date');
+            const request = index.count(dateStr);
             
             request.onsuccess = () => {
-                const events = request.result.map(date => ({
-                    title: '📔',
-                    date: date,
-                    display: 'background',
-                    backgroundColor: '#007bff'
-                }));
-                callback(events);
-            };
-        }
-
-        // Abrir modal para fecha específica
-        function openModal(dateStr) {
-            currentDate = dateStr;
-            document.getElementById('modalDate').textContent = new Date(dateStr).toLocaleDateString('es-AR');
-            document.getElementById('entryModal').style.display = 'block';
-            
-            // Cargar entrada existente si hay
-            loadEntry(dateStr);
-        }
-
-        // Cerrar modal
-        function closeModal() {
-            document.getElementById('entryModal').style.display = 'none';
-            resetForm();
-        }
-
-        // Cargar entrada existente
-        function loadEntry(dateStr) {
-            const transaction = db.transaction(['entries'], 'readonly');
-            const objectStore = transaction.objectStore('entries');
-            const request = objectStore.get(dateStr);
-            
-            request.onsuccess = () => {
-                if (request.result) {
-                    currentEntry = request.result;
-                    document.getElementById('noteText').value = currentEntry.text || '';
-                    
-                    // Mostrar ubicación
-                    if (currentEntry.location) {
-                        document.getElementById('locationDisplay').innerHTML = 
-                            `📍 Lat: ${currentEntry.location.latitude.toFixed(6)}<br>
-                             Lon: ${currentEntry.location.longitude.toFixed(6)}`;
-                    }
-                    
-                    // Mostrar audios
-                    displayAudios();
-                    
-                    // Mostrar imágenes
-                    displayImages();
-                } else {
-                    currentEntry = { text: '', audio: [], images: [], location: null };
+                if (request.result > 0) {
+                    element.classList.add('has-entry');
                 }
             };
         }
 
-        // Obtener ubicación GPS
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        currentEntry.location = {
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude,
-                            timestamp: new Date().toISOString()
-                        };
-                        document.getElementById('locationDisplay').innerHTML = 
-                            `📍 Lat: ${position.coords.latitude.toFixed(6)}<br>
-                             Lon: ${position.coords.longitude.toFixed(6)}`;
-                    },
-                    (error) => {
-                        alert('Error al obtener ubicación: ' + error.message);
-                    }
-                );
-            } else {
-                alert('Tu navegador no soporta geolocalización');
-            }
+        // ============================================
+        // MODAL
+        // ============================================
+        function openModal(dateStr) {
+            currentDate = dateStr;
+            const modal = document.getElementById('entryModal');
+            const dateObj = new Date(dateStr + 'T12:00:00');
+            
+            document.getElementById('modalDate').textContent = dateObj.toLocaleDateString('es-AR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            
+            loadEntriesForDate(dateStr);
+            resetForm();
         }
 
-        // Grabar audio
+        function closeModal() {
+            const modal = document.getElementById('entryModal');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                stopRecording();
+            }
+            
+            resetForm();
+        }
+
+        // Cerrar modal con ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('entryModal');
+                if (modal.getAttribute('aria-hidden') === 'false') {
+                    closeModal();
+                }
+            }
+        });
+
+        // Cerrar modal al hacer click fuera
+        document.getElementById('entryModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeModal();
+            }
+        });
+
+        // ============================================
+        // ENTRADAS EXISTENTES
+        // ============================================
+        function loadEntriesForDate(dateStr) {
+            const transaction = db.transaction(['entries'], 'readonly');
+            const objectStore = transaction.objectStore('entries');
+            const index = objectStore.index('date');
+            const request = index.getAll(dateStr);
+            
+            request.onsuccess = () => {
+                const entries = request.result;
+                entries.sort((a, b) => b.timestamp - a.timestamp);
+                displayEntries(entries);
+            };
+        }
+
+        function displayEntries(entries) {
+            const section = document.getElementById('entriesSection');
+            const container = document.getElementById('entriesList');
+            
+            if (entries.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+            
+            section.classList.remove('hidden');
+            container.innerHTML = '';
+            
+            entries.forEach(entry => {
+                const time = new Date(entry.timestamp).toLocaleTimeString('es-AR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const card = document.createElement('article');
+                card.className = 'entry-card';
+                
+                const hasAudio = entry.audio && entry.audio.length > 0;
+                const hasImages = entry.images && entry.images.length > 0;
+                const hasLocation = entry.location !== null;
+                
+                card.innerHTML = `
+                    <div class="entry-card-header">
+                        <div class="entry-time">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            ${time}
+                        </div>
+                        <div class="entry-actions">
+                            <button 
+                                class="btn btn-ghost btn-sm btn-icon" 
+                                onclick="editEntry(${entry.timestamp})"
+                                aria-label="Editar entrada"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+                            <button 
+                                class="btn btn-ghost btn-sm btn-icon" 
+                                onclick="deleteEntryByTimestamp(${entry.timestamp})"
+                                aria-label="Eliminar entrada"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    ${entry.text ? `<p class="entry-text-preview">${entry.text}</p>` : ''}
+                    <div class="entry-meta">
+                        ${hasAudio ? `<span class="entry-meta-item">🎤 ${entry.audio.length} audio${entry.audio.length > 1 ? 's' : ''}</span>` : ''}
+                        ${hasImages ? `<span class="entry-meta-item">📷 ${entry.images.length} imagen${entry.images.length > 1 ? 'es' : ''}</span>` : ''}
+                        ${hasLocation ? `<span class="entry-meta-item">📍 GPS</span>` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function editEntry(timestamp) {
+            const transaction = db.transaction(['entries'], 'readonly');
+            const objectStore = transaction.objectStore('entries');
+            const request = objectStore.get(timestamp);
+            
+            request.onsuccess = () => {
+                if (request.result) {
+                    currentEntry = request.result;
+                    
+                    document.getElementById('noteText').value = currentEntry.text || '';
+                    
+                    if (currentEntry.location) {
+                        displayLocation(currentEntry.location);
+                    }
+                    
+                    displayAudios();
+                    displayImages();
+                    
+                    document.querySelector('.form-section-title').textContent = 'Editar entrada';
+                    
+                    document.querySelector('.entries-section').scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                }
+            };
+        }
+
+        function deleteEntryByTimestamp(timestamp) {
+            if (!confirm('¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            const transaction = db.transaction(['entries'], 'readwrite');
+            const objectStore = transaction.objectStore('entries');
+            const request = objectStore.delete(timestamp);
+            
+            request.onsuccess = () => {
+                showToast('Entrada eliminada correctamente', 'success');
+                loadEntriesForDate(currentDate);
+                calendar.refetchEvents();
+            };
+            
+            request.onerror = () => {
+                showToast('Error al eliminar la entrada', 'error');
+            };
+        }
+
+        // ============================================
+        // GUARDAR ENTRADA
+        // ============================================
+        function saveEntry() {
+            const text = document.getElementById('noteText').value.trim();
+            
+            if (!text && currentEntry.audio.length === 0 && currentEntry.images.length === 0) {
+                showToast('Agrega al menos una nota, audio o imagen', 'error');
+                return;
+            }
+            
+            const timestamp = currentEntry.timestamp || Date.now();
+            
+            const entry = {
+                timestamp: timestamp,
+                date: currentDate,
+                created: new Date().toISOString(),
+                text: text,
+                audio: currentEntry.audio,
+                images: currentEntry.images,
+                location: currentEntry.location
+            };
+            
+            const transaction = db.transaction(['entries'], 'readwrite');
+            const objectStore = transaction.objectStore('entries');
+            const request = objectStore.put(entry);
+            
+            request.onsuccess = () => {
+                showToast('Entrada guardada correctamente', 'success');
+                closeModal();
+                calendar.refetchEvents();
+            };
+            
+            request.onerror = () => {
+                showToast('Error al guardar la entrada', 'error');
+            };
+        }
+
+        // ============================================
+        // GRABACIÓN DE AUDIO
+        // ============================================
         async function toggleRecording() {
             const btn = document.getElementById('recordBtn');
+            const btnText = document.getElementById('recordBtnText');
             
             if (!mediaRecorder || mediaRecorder.state === 'inactive') {
                 try {
@@ -282,124 +1401,222 @@
                     };
                     
                     mediaRecorder.start();
-                    btn.textContent = '⏹️ Detener';
                     btn.classList.add('recording');
+                    btnText.textContent = 'Detener grabación';
                 } catch (error) {
-                    alert('Error al acceder al micrófono: ' + error.message);
+                    showToast('No se pudo acceder al micrófono', 'error');
                 }
             } else {
-                mediaRecorder.stop();
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-                btn.textContent = '🎤 Grabar Voz';
-                btn.classList.remove('recording');
+                stopRecording();
             }
         }
 
-        // Mostrar audios guardados
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                
+                const btn = document.getElementById('recordBtn');
+                const btnText = document.getElementById('recordBtnText');
+                btn.classList.remove('recording');
+                btnText.textContent = 'Grabar voz';
+            }
+        }
+
         function displayAudios() {
             const container = document.getElementById('audioList');
             container.innerHTML = '';
+            
+            if (currentEntry.audio.length === 0) return;
+            
             currentEntry.audio.forEach((audio, index) => {
                 const div = document.createElement('div');
-                div.className = 'audio-item';
+                div.className = 'media-item';
                 div.innerHTML = `
-                    <audio controls src="${audio.data}"></audio>
-                    <button onclick="deleteAudio(${index})" style="background:#dc3545;padding:5px 10px">Eliminar</button>
+                    <audio controls src="${audio.data}" aria-label="Nota de voz ${index + 1}"></audio>
+                    <button 
+                        class="btn btn-danger btn-sm btn-icon" 
+                        onclick="deleteAudio(${index})"
+                        aria-label="Eliminar audio ${index + 1}"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        </svg>
+                    </button>
                 `;
                 container.appendChild(div);
             });
         }
 
-        // Eliminar audio
         function deleteAudio(index) {
             currentEntry.audio.splice(index, 1);
             displayAudios();
         }
 
-        // Preview de imagen
+        // ============================================
+        // UBICACIÓN GPS
+        // ============================================
+        function getLocation() {
+            if (!navigator.geolocation) {
+                showToast('Tu navegador no soporta geolocalización', 'error');
+                return;
+            }
+            
+            showToast('Obteniendo ubicación...', 'info');
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    currentEntry.location = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy,
+                        timestamp: new Date().toISOString()
+                    };
+                    displayLocation(currentEntry.location);
+                    showToast('Ubicación obtenida correctamente', 'success');
+                },
+                (error) => {
+                    let message = 'Error al obtener ubicación';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'Permiso de ubicación denegado';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'Ubicación no disponible';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'Tiempo de espera agotado';
+                            break;
+                    }
+                    showToast(message, 'error');
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        function displayLocation(location) {
+            const container = document.getElementById('locationDisplay');
+            container.innerHTML = `
+                <div class="location-display">
+                    <div class="location-coords">
+                        <strong>📍 Coordenadas:</strong><br>
+                        Lat: ${location.latitude.toFixed(6)}<br>
+                        Lon: ${location.longitude.toFixed(6)}<br>
+                        <small>Precisión: ${Math.round(location.accuracy)}m</small>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // IMÁGENES
+        // ============================================
         function previewImage() {
             const files = document.getElementById('imageInput').files;
+            
             Array.from(files).forEach(file => {
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('La imagen es demasiado grande (máx 5MB)', 'error');
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     currentEntry.images.push({
                         data: e.target.result,
+                        name: file.name,
                         timestamp: new Date().toISOString()
                     });
                     displayImages();
                 };
                 reader.readAsDataURL(file);
             });
+            
+            document.getElementById('imageInput').value = '';
         }
 
-        // Mostrar imágenes
         function displayImages() {
             const container = document.getElementById('imagePreview');
             container.innerHTML = '';
+            
+            if (currentEntry.images.length === 0) return;
+            
             currentEntry.images.forEach((image, index) => {
                 const div = document.createElement('div');
                 div.className = 'image-item';
                 div.innerHTML = `
-                    <img src="${image.data}" class="preview-image">
-                    <button onclick="deleteImage(${index})" style="background:#dc3545">Eliminar</button>
+                    <img src="${image.data}" alt="${image.name || 'Imagen ' + (index + 1)}" loading="lazy">
+                    <button 
+                        class="image-item-remove" 
+                        onclick="deleteImage(${index})"
+                        aria-label="Eliminar imagen ${index + 1}"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
                 `;
                 container.appendChild(div);
             });
         }
 
-        // Eliminar imagen
         function deleteImage(index) {
             currentEntry.images.splice(index, 1);
             displayImages();
         }
 
-        // Guardar entrada
-        function saveEntry() {
-            currentEntry.text = document.getElementById('noteText').value;
-            currentEntry.date = currentDate;
+        // ============================================
+        // TOAST NOTIFICATIONS
+        // ============================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.setAttribute('role', 'alert');
             
-            const transaction = db.transaction(['entries'], 'readwrite');
-            const objectStore = transaction.objectStore('entries');
-            const request = objectStore.put(currentEntry);
+            const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
             
-            request.onsuccess = () => {
-                alert('✅ Entrada guardada');
-                closeModal();
-                calendar.refetchEvents();
-            };
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <div class="toast-message">${icon} ${message}</div>
+                </div>
+            `;
             
-            request.onerror = () => {
-                alert('❌ Error al guardar');
-            };
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 300ms ease-in-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
-        // Eliminar entrada
-        function deleteEntry() {
-            if (!confirm('¿Seguro que quieres eliminar esta entrada?')) return;
-            
-            const transaction = db.transaction(['entries'], 'readwrite');
-            const objectStore = transaction.objectStore('entries');
-            const request = objectStore.delete(currentDate);
-            
-            request.onsuccess = () => {
-                alert('✅ Entrada eliminada');
-                closeModal();
-                calendar.refetchEvents();
-            };
-        }
-
-        // Reset form
+        // ============================================
+        // RESET FORM
+        // ============================================
         function resetForm() {
             document.getElementById('noteText').value = '';
             document.getElementById('locationDisplay').innerHTML = '';
             document.getElementById('audioList').innerHTML = '';
             document.getElementById('imagePreview').innerHTML = '';
             document.getElementById('imageInput').value = '';
-            currentEntry = { text: '', audio: [], images: [], location: null };
+            
+            currentEntry = { 
+                text: '', 
+                audio: [], 
+                images: [], 
+                location: null 
+            };
+            
+            document.querySelector('.form-section-title').textContent = 'Nueva entrada';
+            
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                stopRecording();
+            }
         }
-
-        // Iniciar app
-        window.onload = initDB;
     </script>
 </body>
 </html>
